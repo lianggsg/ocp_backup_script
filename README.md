@@ -11,6 +11,7 @@ XXX:/backup:/ /backup  nfs defaults,_netdev 0 0
 在第一台服务器上创建如下周期性任务：
 # crontab -e
 30 1 * * * timeout 5h bash /backup/backup-scripts/images-and-devops-backup.sh &> /dev/null
+
 0 1 * * * timeout 20m ansible -m script -a "/backup/backup-scripts/ocp-backup.sh" nodes &> /dev/null
 在第一台master(XXX)节点创建如下周期性任务：
 # crontab -e
