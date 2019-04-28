@@ -1,10 +1,11 @@
 #!/bin/bash
 set -eo pipefail
 
-dest_root_path=/backup/ocp-backup
-backup_dir=backup-ocp-$(date '+%Y-%m-%d')
-backup_data_dir=$dest_root_path/$backup_dir/${HOSTNAME}
-backup_log_file=$dest_root_path/${HOSTNAME}-backup.log
+host_name=$HOSTNAME
+
+dest_root_path=/backup/ocp-backup/$host_name/$(date '+%Y%m')/$(date '+%Y%m%d')
+backup_data_dir=$dest_root_path
+backup_log_file=$dest_root_path/backup.log
 
 if [ ! -d "$backup_data_dir" ];then
   mkdir -p $backup_data_dir
@@ -43,7 +44,11 @@ ocpfiles(){
   cp -aR /etc/dnsmasq* ${backup_data_dir}/etc/
 
   echo "$(date '+%F %T') [info]: backup ca cert" >> $backup_log_file
-  cp -aR /etc/pki/ca-trust/source/anchors/* ${backup_data_dir}/etc/pki/ca-trust/source/anchors/
+  count_file=`ls /etc/pki/ca-trust/source/anchors|wc -l`
+  if [ $count_file -ne 0 ]
+  then
+    cp -aR /etc/pki/ca-trust/source/anchors/* ${backup_data_dir}/etc/pki/ca-trust/source/anchors/
+  fi
 }
 
 packagelist(){
